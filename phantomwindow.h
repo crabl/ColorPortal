@@ -5,6 +5,9 @@
 #ifndef PHANTOMWINDOW_H_
 #define PHANTOMWINDOW_H_
 
+#include <iostream>
+#include <fstream>
+
 #include <QWidget>
 #include <QMainWindow>
 #include <QPainter>
