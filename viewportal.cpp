@@ -3,6 +3,9 @@
 Viewportal::Viewportal(QWidget *parent, int w, int h) : QLabel(parent) {
     setMouseTracking (true);
 
+    setFixedSize(640,800);
+
+
     screenX = QApplication::desktop() -> screenGeometry().width();
     screenY = QApplication::desktop() -> screenGeometry().height();
 
@@ -20,6 +23,12 @@ Viewportal::Viewportal(QWidget *parent, int w, int h) : QLabel(parent) {
 
     pixmap = QPixmap::grabWindow (QApplication::desktop()->winId(), 0, 0, x, y);
     setPixmap (pixmap);
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updatePixmap()));
+    timer->start(40);
+
+
 }
 
 void Viewportal::mouseMoveEvent(QMouseEvent *event) {
@@ -34,13 +43,18 @@ void Viewportal::mouseMoveEvent(QMouseEvent *event) {
       top = 0;
    else if (top + y > screenY)
       top = screenY - y;
-   pixmap = QPixmap::grabWindow (QApplication::desktop () -> winId (), left, top, x, y);
-   image = pixmap.toImage ();
-   pixmap = QPixmap::fromImage (image);
-   setPixmap (pixmap);
+    updatePixmap();
 }
 
 void Viewportal::resizeEvent(QResizeEvent *event) {
    x = width ();
    y = height ();
+}
+
+void Viewportal::updatePixmap() {
+    pixmap = QPixmap::grabWindow (QApplication::desktop () -> winId (), 0, 51, 640, 800);
+    image = pixmap.toImage ();
+    image.invertPixels();
+    pixmap = QPixmap::fromImage (image);
+    setPixmap (pixmap);
 }

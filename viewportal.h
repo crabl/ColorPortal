@@ -2,9 +2,9 @@
 #define VIEWPORTAL_H
 
 #include <QtGui>
+#include <QTimer>
 
-class Viewportal : public QLabel
-{
+class Viewportal : public QLabel {
    Q_OBJECT
    
   public:
@@ -13,6 +13,9 @@ class Viewportal : public QLabel
   protected:
    void mouseMoveEvent(QMouseEvent *event);
    void resizeEvent(QResizeEvent *event);
+
+public slots:
+   void updatePixmap();
 
   private:
    int screenX;
