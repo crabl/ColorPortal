@@ -35,9 +35,8 @@ void Viewportal::mouseMoveEvent(QMouseEvent *event) {
    else if (top + y > screenY)
       top = screenY - y;
    pixmap = QPixmap::grabWindow (QApplication::desktop () -> winId (), left, top, x, y);
-   //image = pixmap.toImage ();
-   //image.invertPixels ();
-   //pixmap = QPixmap::fromImage (image);
+   image = pixmap.toImage ();
+   pixmap = QPixmap::fromImage (image);
    setPixmap (pixmap);
 }
 

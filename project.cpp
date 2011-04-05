@@ -7,7 +7,6 @@ int main (int argc, char **argv)
 /*
    Viewportal *viewportal = new Viewportal();
    viewportal->setWindowFlags(Qt::WindowStaysOnTopHint);
-   viewportal->
    viewportal->show();
 */
 

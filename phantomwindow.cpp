@@ -15,15 +15,7 @@ PhantomWindow::PhantomWindow(QWidget *parent) {
 
     // Uncomment this to make it a "Frameless" window
     //setWindowFlags(Qt::FramelessWindowHint);
-}
 
-void PhantomWindow::paintEvent(QPaintEvent *event) {
-    QPainter painter(this);
-
-    // This works too, input just goes right through it. Uncomment to see it in action!
-    painter.setBrush(QBrush(Qt::blue));
-    painter.setOpacity(0.4);
-    painter.drawRect(0, 0, QMainWindow::width(), QMainWindow::height());
 
     // WARNING: GYPSY MAGIC BELOW! PROCEED WITH CAUTION!
     Pixmap mask;
@@ -38,12 +30,6 @@ void PhantomWindow::paintEvent(QPaintEvent *event) {
             1, // height
             1  // depth
     );
-
-    std::ofstream os;
-    os.open("/home/crabl/test.xpm");
-    os << mask;
-    os.close();
-    std::cerr << "Created pixmap" << std::endl;
 
     // Combine the pixmap (which catches the input received in the top-level
     // window) with a new pixmap encompassing the bottom layers of windows
@@ -61,5 +47,21 @@ void PhantomWindow::paintEvent(QPaintEvent *event) {
     XFreePixmap(QX11Info::display(), mask);
 
     // Mind... blown. You're welcome.
+}
+
+void PhantomWindow::paintEvent(QPaintEvent *event) {
+    QPainter painter(this);
+
+    // This works too, input just goes right through it. Uncomment to see it in action!
+    painter.setBrush(QBrush(Qt::blue));
+    painter.setOpacity(0.4);
+    painter.drawRect(0, 0, QMainWindow::width(), QMainWindow::height());
+
+    painter.setBrush(QBrush(Qt::red));
+    painter.setOpacity(1);
+    painter.drawRect(100,100,300,300);
+
+    system("xwd -display :0.0 -root -frame -out /home/crabl/window.xwd");
+
 
 }
