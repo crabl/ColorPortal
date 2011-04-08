@@ -1,24 +1,11 @@
 #include "viewportal.h"
 
 Viewportal::Viewportal(QWidget *parent, int w, int h) : QLabel(parent) {
-    setMouseTracking (true);
-    setFixedSize(640,800);
-    setGeometry(QRect(640, 0, 1280, 800));
-
     screenX = QApplication::desktop() -> screenGeometry().width();
     screenY = QApplication::desktop() -> screenGeometry().height();
 
-    if (w < 0 || w > screenX) {
-        x = 640;
-    } else {
-        x = w;
-    }
-
-    if (h < 0 || h > screenY) {
-        y = 480;
-    } else {
-        y = h;
-    }
+    setFixedSize(screenX/2,screenY);
+    setGeometry(QRect(screenX/2, 0, screenX, screenY));
 
     cbType = "Deuteranope";
 
@@ -34,16 +21,19 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
 
     QImage temp = input.convertToFormat(QImage::Format_RGB32);
 
-    float *cvd;
+    float *cMatrix = 0;
 
     if(type == "Protanope") {
-        cvd = protanope;
+        cMatrix = protanope;
     } else if(type == "Deuteranope") {
-        cvd = deuteranope;
+        cMatrix = deuteranope;
     } else if(type == "Tritanope") {
-        cvd = tritanope;
+        cMatrix = tritanope;
     }
 
+    // This code was adapted by Christopher Rabl from the Javascript implementation of
+    // the LMS Daltonization Algorithm found at http://www.daltonize.org/
+    // Code: http://mudcu.be/labs/Color/Vision/Javascript/Color.Vision.Daltonize.js
     float L, M, S, l, m, s, R, G, B, RR, GG, BB;
     for(int y = 0; y < temp.height(); ++y) {
         for(int x = 0; x < temp.width(); ++x) {
@@ -58,9 +48,9 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
             S = (0.0299566 * r) + (0.184309 * g) + (1.46709 * b);
 
             // Simulate color blindness using the corresponding matrix
-            l = (cvd[0] * L) + (cvd[1] * M) + (cvd[2] * S);
-            m = (cvd[3] * L) + (cvd[4] * M) + (cvd[5] * S);
-            s = (cvd[6] * L) + (cvd[7] * M) + (cvd[8] * S);
+            l = (cMatrix[0] * L) + (cMatrix[1] * M) + (cMatrix[2] * S);
+            m = (cMatrix[3] * L) + (cMatrix[4] * M) + (cMatrix[5] * S);
+            s = (cMatrix[6] * L) + (cMatrix[7] * M) + (cMatrix[8] * S);
 
             // Convert again, from LMS to RGB colorspace
             R = (0.0809444479 * l) + (-0.130504409 * m) + (0.116721066 * s);
@@ -82,8 +72,7 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
             G = GG + g;
             B = BB + b;
 
-            // Clamp values
-
+            // Ensure values fall within the correct range
             R = fmin(fmax(R,0),255);
             G = fmin(fmax(G,0),255);
             B = fmin(fmax(B,0),255);
@@ -97,11 +86,6 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
     return temp;
 }
 
-void Viewportal::resizeEvent(QResizeEvent *event) {
-   x = width();
-   y = height();
-}
-
 QString Viewportal::getColorblindType() const { return cbType; }
 
 void Viewportal::setColorblindType(QString str) {
@@ -113,7 +97,7 @@ void Viewportal::setColorblindType(QString str) {
 }
 
 void Viewportal::updatePixmap() {
-    pixmap = QPixmap::grabWindow (QApplication::desktop () -> winId (), 0, 51, 640, 800);
+    pixmap = QPixmap::grabWindow(QApplication::desktop()->winId (), 0, 51, screenX/2, screenY);
     QImage image = daltonize(pixmap.toImage(), getColorblindType());
     pixmap = QPixmap::fromImage(image);
     setPixmap (pixmap);

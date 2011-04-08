@@ -14,7 +14,6 @@ public:
     Viewportal(QWidget *parent = 0, int w = 640, int h = 480);
 
 protected:
-    void resizeEvent(QResizeEvent *event);
     QImage daltonize(const QImage&, QString);
     QString getColorblindType() const;
 
@@ -28,7 +27,6 @@ private:
     int x;
     int y;
     QPixmap pixmap;
-    QImage image;
     QString cbType;
 };
 
