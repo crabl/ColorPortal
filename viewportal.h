@@ -5,17 +5,18 @@
 #include <QtGui>
 #include <QTimer>
 
-const int MAX_UPDATE_INTERVAL = 30; // milliseconds
+const int MAX_UPDATE_INTERVAL = 40; // milliseconds
 
 class Viewportal : public QLabel {
     Q_OBJECT
 
 public:
-    Viewportal(QWidget *parent = 0, int w = 640, int h = 480);
+    Viewportal(QWidget *parent = 0);
 
 protected:
     QImage daltonize(const QImage&, QString);
     QString getColorblindType() const;
+    bool event(QEvent*);
 
 public slots:
     void updatePixmap();

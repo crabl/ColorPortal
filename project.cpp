@@ -1,5 +1,4 @@
 #include "viewportal.h"
-#include "phantomwindow.h"
 
 int main (int argc, char **argv)
 {

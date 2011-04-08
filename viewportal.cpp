@@ -1,13 +1,12 @@
 #include "viewportal.h"
+#include <iostream>
 
-Viewportal::Viewportal(QWidget *parent, int w, int h) : QLabel(parent) {
+Viewportal::Viewportal(QWidget *parent) : QLabel(parent), cbType("Deuteranope") {
     screenX = QApplication::desktop() -> screenGeometry().width();
     screenY = QApplication::desktop() -> screenGeometry().height();
 
     setFixedSize(screenX/2,screenY);
     setGeometry(QRect(screenX/2, 0, screenX, screenY));
-
-    cbType = "Deuteranope";
 
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updatePixmap()));
@@ -21,7 +20,7 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
 
     QImage temp = input.convertToFormat(QImage::Format_RGB32);
 
-    float *cMatrix = 0;
+    float *cMatrix = NULL;
 
     if(type == "Protanope") {
         cMatrix = protanope;
@@ -84,6 +83,25 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
     }
 
     return temp;
+}
+
+bool Viewportal::event(QEvent *e) {
+
+    bool result = QLabel::event(e);
+    if(e->type() == QEvent::MouseButtonPress) {
+        QString type = getColorblindType();
+        if(type == "Deuteranope") {
+            setColorblindType("Protanope");
+        } else if(type == "Protanope") {
+            setColorblindType("Tritanope");
+        } else {
+            setColorblindType("Deuteranope");
+        }
+
+        result = true;
+    }
+
+    return result;
 }
 
 QString Viewportal::getColorblindType() const { return cbType; }
