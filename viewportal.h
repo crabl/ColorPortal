@@ -1,11 +1,11 @@
 #ifndef VIEWPORTAL_H
 #define VIEWPORTAL_H
 
-#include <iostream>
+#include "math.h"
 #include <QtGui>
 #include <QTimer>
 
-const int MAX_UPDATE_INTERVAL = 10000; // milliseconds
+const int MAX_UPDATE_INTERVAL = 30; // milliseconds
 
 class Viewportal : public QLabel {
     Q_OBJECT
@@ -15,6 +15,7 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event);
+    QImage daltonize(const QImage&, QString);
     QString getColorblindType() const;
 
 public slots:
