@@ -1,7 +1,8 @@
 #include "viewportal.h"
 #include <iostream>
 
-Viewportal::Viewportal(QWidget *parent) : QLabel(parent), cbType("Deuteranope") {
+Viewportal::Viewportal(QWidget *parent) :
+        QLabel(parent), cbType("Deuteranope"), simulate(false) {
     screenX = QApplication::desktop() -> screenGeometry().width();
     screenY = QApplication::desktop() -> screenGeometry().height();
 
@@ -56,10 +57,12 @@ QImage Viewportal::daltonize(const QImage &input, QString type) {
             G = (-0.0102485335 * l) + (0.0540193266 * m) + (-0.113614708 * s);
             B = (-0.000365296938 * l) + (-0.00412161469 * m) + (0.693511405 * s);
 
-            // Isolate invisible colors to color vision deficiency (calculate error matrix)
-            R = r - R;
-            G = g - G;
-            B = b - B;
+            if(!isSimulation()) {
+                // Isolate invisible colors to color vision deficiency (calculate error matrix)
+                R = r - R;
+                G = g - G;
+                B = b - B;
+            }
 
             // Shift colors towards visible spectrum (apply error modifications)
             RR = 0;
@@ -116,6 +119,7 @@ void Viewportal::setColorblindType(QString str) {
 
 void Viewportal::updatePixmap() {
     pixmap = QPixmap::grabWindow(QApplication::desktop()->winId (), 0, 51, screenX/2, screenY);
+    setSimulation(false);
     QImage image = daltonize(pixmap.toImage(), getColorblindType());
     pixmap = QPixmap::fromImage(image);
     setPixmap (pixmap);

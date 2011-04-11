@@ -17,12 +17,15 @@ protected:
     QImage daltonize(const QImage&, QString);
     QString getColorblindType() const;
     bool event(QEvent*);
+    bool isSimulation() const { return simulate; }
 
 public slots:
     void updatePixmap();
     void setColorblindType(QString);
+    void setSimulation(bool sim) { simulate = sim; }
 
 private:
+    bool simulate;
     int screenX;
     int screenY;
     int x;

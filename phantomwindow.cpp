@@ -57,11 +57,5 @@ void PhantomWindow::paintEvent(QPaintEvent *event) {
     painter.setOpacity(0.4);
     painter.drawRect(0, 0, QMainWindow::width(), QMainWindow::height());
 
-    painter.setBrush(QBrush(Qt::red));
-    painter.setOpacity(1);
-    painter.drawRect(100,100,300,300);
-
-    system("xwd -display :0.0 -root -frame -out /home/crabl/window.xwd");
-
 
 }
